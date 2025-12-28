@@ -10,6 +10,12 @@ services:
         value: production
       - key: APP_DEBUG
         value: false
+      - key: APP_URL
+        value: https://jeeran-app.onrender.com
+      - key: FRONTEND_URL
+        value: https://vue-abx.pages.dev
+      - key: SANCTUM_STATEFUL_DOMAINS
+        value: vue-abx.pages.dev
       - key: DB_CONNECTION
         value: mysql
       - key: DB_HOST
@@ -39,16 +45,3 @@ databases:
   - name: jeeran-db
     databaseName: jeraan
     user: jeeran
-```
-
-### Step 2: Update .gitignore
-
-Make sure your `.gitignore` includes:
-```
-/node_modules
-/public/hot
-/public/storage
-/storage/*.key
-/vendor
-.env
-.env.backup
