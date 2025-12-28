@@ -1,13 +1,28 @@
 <?php
 
-header('Access-Control-Allow-Origin: https://jeraan-vue.pages.dev');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
-header('Access-Control-Allow-Credentials: true');
+// CORS Headers - Add at the very top
+if (isset($_SERVER['HTTP_ORIGIN'])) {
+    $allowed_origins = [
+        'https://jeraan-vue.pages.dev',
+        'http://localhost:8080',
+        'http://localhost:3000'
+    ];
+    
+    if (in_array($_SERVER['HTTP_ORIGIN'], $allowed_origins)) {
+        header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
+        header('Access-Control-Allow-Credentials: true');
+        header('Access-Control-Max-Age: 86400');
+    }
+}
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'])) {
+        header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS");
+    }
+    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
+        header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
+    }
+    exit(0);
 }
 
 use Illuminate\Contracts\Http\Kernel;
