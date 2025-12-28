@@ -14,6 +14,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ListController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\ClientController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -29,7 +30,7 @@ use Illuminate\Support\Facades\Route;
  */
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+    return response()->json($request->user());
 });
 
 /*Route::group(['middleware'=>'api','prefix'=>'auth'], function($router){

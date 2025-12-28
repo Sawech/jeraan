@@ -4,14 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+// use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 use Auth;
 
 class Order extends Model
 {
     use HasFactory;
-    use SoftDeletes;
+    // use SoftDeletes;
 
     protected $fillable = [
         'user_id',
@@ -26,12 +26,17 @@ class Order extends Model
         'delivery_date',
         'order_type'
     ];
-    protected $hidden = ['updated_at','user_id','category_id','fabric_id','design_id','category','fabric','design','deleted_at'];
+    protected $hidden = ['updated_at','user_id','category_id','fabric_id','design_id','category','fabric','design']; // ,'deleted_at'
 
     protected $appends = ['deserved_amount'];
     public function orderDetails()
     {
         return $this->hasMany(OrderSizeGoneOption::class,'order_id');
+    }
+    
+    public function buttons()
+    {
+        return $this->hasOne(OrderButton::class, 'order_id');
     }
 
     public function category()
@@ -57,7 +62,7 @@ class Order extends Model
     public function getPaymentImageAttribute($value)
     {
         if ($value) {
-            return asset('storage/uploads/payments/' . $value);
+            return asset('storage/uploads/payments/'.$value);
         }
 
     }

@@ -1,0 +1,54 @@
+services:
+  - type: web
+    name: jeeran-app
+    env: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: APP_KEY
+        value: base64:BFfJT3oGLG8lokhRk+ZBP1IX0MgnSBSPPkR7H3usvvk=
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_HOST
+        fromDatabase:
+          name: jeeran-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: jeeran-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: jeeran-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: jeeran-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: jeeran-db
+          property: password
+      - key: JWT_SECRET
+        value: nehMRZNUUCyJHBPHJHUi4liE77NF4KXk6z1jm45nGAt1P1CSROn1SDpLbKQFyVwN
+
+databases:
+  - name: jeeran-db
+    databaseName: jeraan
+    user: jeeran
+```
+
+### Step 2: Update .gitignore
+
+Make sure your `.gitignore` includes:
+```
+/node_modules
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.env.backup

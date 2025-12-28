@@ -18,9 +18,7 @@ class SizeGownOption extends Model
 
     public function getImageAttribute($value)
     {
-        if ($value) {
-            return asset('storage/uploads/sizeGown/' . $value);
-        }
+        return $value;
 
     }
 

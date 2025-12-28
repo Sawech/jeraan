@@ -6,12 +6,14 @@ use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderSizeGoneOption;
+use App\Models\OrderButton;
 use App\Models\SizeGown;
 use App\Models\Category;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class AdminOrderController extends Controller
 {
@@ -73,6 +75,13 @@ class AdminOrderController extends Controller
             }
             $order = $order->makeVisible(['created_at', 'user_id', 'category_id', 'fabric_id', 'design_id', 'category', 'fabric', 'design']);
             $order['details'] = $this->orderDetails($request->order_id);
+            Log::info('🔍 [API] Fetching size types for user', [
+                'orderDetails' => $order['details']
+            ]);
+            
+        $order['buttons'] = $this->orderButtons($request->order_id);
+
+            
             return $this->outApiJson('success', trans('main.success'), $order);
         } catch (\Exception$th) {
 
@@ -88,6 +97,41 @@ class AdminOrderController extends Controller
 
         return $validator;
     }
+
+    public function orderButtons($order_id)
+{
+    try {
+        $orderButtons = OrderButton::where('order_id', $order_id)->first();
+                            Log::info('🔘 orderButtons', [
+                                'orderButtons' => $orderButtons
+                            ]);
+        
+        if (!$orderButtons) {
+            return null; // or return an empty array/object based on your preference
+        }
+        
+        // Return the button data in a structured format
+        return [
+            'jaap_num' => $orderButtons->jaap_num,
+            'neck' => [
+                'button' => $orderButtons->neck_num,
+                'number' => $orderButtons->neck_count,
+            ],
+            'japz' => [
+                'button' => $orderButtons->japz_num,
+                'number' => $orderButtons->japz_count,
+            ],
+            'cabk' => [
+                'button' => $orderButtons->cabk_num,
+                'number' => $orderButtons->cabk_count,
+            ],
+        ];
+        
+    } catch (\Exception $th) {
+        Log::error('Error fetching order buttons: ' . $th->getMessage());
+        return null;
+    }
+}
 
     public function orderDetails($order_id)
     {
@@ -167,28 +211,57 @@ class AdminOrderController extends Controller
     }
 
     public function deleteOrder(Request $request)
-    {
-        if (Auth::user()->role->type != 'admin' && Auth::user()->role->type != 'seller') {
-            return $this->outApiJson('JWT_Exception', trans('main.not_permission'));
+{
+    if (Auth::user()->role->type != 'admin' && Auth::user()->role->type != 'seller') {
+        return $this->outApiJson('JWT_Exception', trans('main.not_permission'));
+    }
+
+    try {
+        $validator = $this->validateDeleteOrder($request);
+
+        Log::info('🔘 Deleting order', [
+            'order_id' => $request->order_id
+        ]);
+        
+        if ($validator->fails()) {
+            return $this->outApiJson('validation', trans('main.validation_errors'), $validator->errors());
         }
 
+        $order = Order::where('id', $request->order_id)->first();
+        if (!$order) {
+            return $this->outApiJson('not-found-data', trans('main.not_found_data'));
+        }
+        
+        \DB::beginTransaction();
         try {
-            $validator = $this->validateDeleteOrder($request);
-
-            if ($validator->fails()) {
-                return $this->outApiJson('validation', trans('main.validation_errors'), $validator->errors());
-            }
-
-            $order = Order::where('id', $request->order_id)->first();
-            if (!$order) {
-                return $this->outApiJson('not-found-data', trans('main.not_found_data'));
-            }
+            // Delete related order details first
+            OrderSizeGoneOption::where('order_id', $request->order_id)->delete();
+            
+            // Delete related order buttons
+            OrderButton::where('order_id', $request->order_id)->delete();
+            
+            // Finally delete the order itself
             Order::where('id', $request->order_id)->delete();
+            
+            \DB::commit();
+            
+            Log::info('✅ Order deleted successfully', [
+                'order_id' => $request->order_id
+            ]);
+            
             return $this->outApiJson('success', trans('main.deleted_sucess'));
-        } catch (\Exception$th) {
+            
+        } catch (\Exception $e) {
+            \DB::rollback();
+            Log::error('❌ Order deletion failed: ' . $e->getMessage());
             return $this->outApiJson('exception', trans('main.exception'));
         }
+        
+    } catch (\Exception $th) {
+        Log::error('❌ Order deletion exception: ' . $th->getMessage());
+        return $this->outApiJson('exception', trans('main.exception'));
     }
+}
 
     public function validateDeleteOrder($request)
     {
@@ -221,6 +294,8 @@ class AdminOrderController extends Controller
                 $staus = "sewing_case";
             } elseif ($order->status == "sewing_case") {
                 $staus = "button_case";
+            } elseif ($order->status == "button_case") {
+                $staus = "ready_to_deliver";
             } else {
                 $staus = "delivered";
             }

@@ -1,0 +1,12 @@
+{
+  "apps": [
+    {
+      "app_id": "app_c2ca715f-02e8-4246-96e6-f54a656affe3",
+      "org_id": "user_4180164b-e767-45b2-a622-3d915ef161be",
+      "deploy_url": "https://push-n3-par-clevercloud-customers.services.clever-cloud.com/app_c2ca715f-02e8-4246-96e6-f54a656affe3.git",
+      "git_ssh_url": "git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/app_c2ca715f-02e8-4246-96e6-f54a656affe3.git",
+      "name": "jeeran-api",
+      "alias": "jeeran-api"
+    }
+  ]
+}

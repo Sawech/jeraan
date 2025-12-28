@@ -39,24 +39,59 @@ class SizeTypeCategoryController extends Controller
     }
 
     public function listAllSizeTypeCategory(Request $request)
-    {
-        try {
-            $validator = $this->validateListSizeTypeCategory($request);
+{
+    try {
+        $validator = Validator::make($request->all(), [
+            'category_id' => 'required',
+            'user_id' => 'nullable|exists:users,id', // Add this
+        ]);
 
-            if ($validator->fails()) {
-                return $this->outApiJson('validation', trans('main.validation_errors'), $validator->errors());
-            }
-
-            $sizeTypeCategories = Category::with('sizeTypes')->find($request->category_id);
-            if (!$sizeTypeCategories) {
-                return $this->outApiJson('not-found-data', trans('main.not_found_data'));
-            }
-            return $this->outApiJson('success', trans('main.success'), $sizeTypeCategories);
-        } catch (\Exception$th) {
-            dd($th->getMessage());
-            return $this->outApiJson('exception', trans('main.exception'));
+        if ($validator->fails()) {
+            return $this->outApiJson('validation', trans('main.validation_errors'), $validator->errors());
         }
+
+        // Use the user_id from request if provided (for admin viewing client's order)
+        // Otherwise use authenticated user's ID (for client viewing their own order)
+        $userId = $request->user_id ?? auth()->id();
+        
+        \Log::info('Fetching sizes for User ID: ' . $userId . ' (Requested by: ' . auth()->id() . ')');
+        
+        $category = Category::with(['sizeTypes' => function($query) {
+            $query->without('sizeTypeUser');
+        }])->find($request->category_id);
+
+        if (!$category) {
+            return $this->outApiJson('not-found-data', trans('main.not_found_data'));
+        }
+
+        // Get size values for the specific user (client)
+        foreach ($category->sizeTypes as $sizeType) {
+            $pivotRecord = \DB::table('size_types_categories')
+                ->where('category_id', $category->id)
+                ->where('size_type_id', $sizeType->id)
+                ->first();
+            
+            
+            if ($pivotRecord) {
+                $userValues = \DB::table('size_types_categories_users')
+                    ->where('size_type_category_id', $pivotRecord->id)
+                    ->where('user_id', $userId) // Use the correct user ID
+                    ->get();
+                
+                
+                $sizeType->size_type_user = $userValues;
+            } else {
+                $sizeType->size_type_user = [];
+            }
+        }
+
+        return $this->outApiJson('success', trans('main.success'), $category);
+    } catch (\Exception $th) {
+        \Log::error('Error in listAllSizeTypeCategory: ' . $th->getMessage());
+        \Log::error($th->getTraceAsString());
+        return $this->outApiJson('exception', trans('main.exception'));
     }
+}
 
     public function validateListSizeTypeCategory($request)
     {

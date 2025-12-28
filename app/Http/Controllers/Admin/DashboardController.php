@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\Setting;
 use App\Models\SiteInfo;
 use App\Models\User;
+use App\Models\Category;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;

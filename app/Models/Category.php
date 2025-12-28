@@ -16,11 +16,19 @@ class Category extends Model
 
     public function sizeTypes()
     {
-        return $this->belongsToMany(SizeType::class, 'size_types_categories', 'category_id', 'size_type_id');
+        return $this->belongsToMany(
+            SizeType::class,
+            'size_types_categories',
+            'category_id',
+            'size_type_id'
+        )->withPivot('id');
     }
-
-    public function getImageAttribute($value)
+    
+    // Add this to get user-specific size values
+    public function sizeTypesWithUserValues($userId)
     {
-        return asset('storage/uploads/category/'.$value);
+        return $this->sizeTypes()->with(['sizeTypeCategoryUsers' => function($query) use ($userId) {
+            $query->where('user_id', $userId);
+        }]);
     }
 }

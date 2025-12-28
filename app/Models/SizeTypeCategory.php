@@ -21,4 +21,9 @@ class SizeTypeCategory extends Model
     {
         return $this->belongsTo(SizeType::class, 'size_type_id');
     }
+
+    public function userValues()
+    {
+        return $this->hasMany(SizeTypeCategoryUser::class, 'size_type_category_id');
+    }
 }

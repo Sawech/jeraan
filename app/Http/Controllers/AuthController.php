@@ -82,83 +82,59 @@ class AuthController extends Controller
     public function login(Request $request)
 {
     try {
-        // Log 1: Log incoming request data
-        \Log::info('Login attempt started', [
-            'mobile_or_email' => $request->input('mobile_or_email'),
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent()
-        ]);
-
+        \Log::info('Step 1: Login started');
+        
         $validator = $this->validateLogin($request);
-
         if ($validator->fails()) {
-            // Log 2: Log validation failures
-            \Log::warning('Login validation failed', [
-                'mobile_or_email' => $request->input('mobile_or_email'),
-                'errors' => $validator->errors()->toArray()
-            ]);
-            
             return $this->outApiJson('validation', trans('main.validation_errors'), $validator->errors());
         }
 
-        // Log 3: Log before attempting authentication
-        \Log::info('Attempting authentication', [
-            'mobile_or_email' => $request->input('mobile_or_email'),
-            'trying_email_first' => true
-        ]);
-
-        // Try email first
-        $token = auth('api')->attempt([
-            'email' => $request->input('mobile_or_email'), 
-            'password' => $request->input('password'), 
-            'status' => 'active'
-        ]);
-
-        if (!$token) {
-            // Log 4: Email attempt failed, trying mobile
-            \Log::info('Email authentication failed, trying mobile', [
-                'mobile_or_email' => $request->input('mobile_or_email')
-            ]);
-
-            // Try mobile
-            $token = auth('api')->attempt([
-                'mobile' => $request->input('mobile_or_email'), 
-                'password' => $request->input('password'), 
-                'status' => 'active'
-            ]);
+        \Log::info('Step 2: Validation passed');
+        
+        // Check if user exists
+        $user = User::where('email', $request->input('mobile_or_email'))->first();
+        \Log::info('Step 3: User lookup', ['found' => $user ? 'yes' : 'no', 'email' => $request->input('mobile_or_email')]);
+        
+        if (!$user) {
+            $user = User::where('mobile', $request->input('mobile_or_email'))->first();
+            \Log::info('Step 4: Mobile lookup', ['found' => $user ? 'yes' : 'no']);
         }
-
-        if (!$token) {
-            // Log 5: Both attempts failed
-            \Log::warning('Login failed - invalid credentials or inactive user', [
-                'mobile_or_email' => $request->input('mobile_or_email'),
-                'ip_address' => $request->ip()
-            ]);
-            
+        
+        if (!$user) {
             return $this->outApiJson('user-not-found', trans('main.user_not_found'));
         }
 
-        // Log 6: Successful login
-        $user = auth('api')->user();
-        \Log::info('Login successful', [
-            'user_id' => $user->id,
-            'email' => $user->email,
-            'mobile' => $user->mobile ?? 'N/A',
-            'ip_address' => $request->ip()
+//         \Log::info('ROLLEELELE', ['role' => $user->role_id]);
+//         if ($user->role_id == 1) {
+//     return $this->outApiJson('user-not-found', trans('main.user_not_found'));
+// }
+        \Log::info('Step 5: About to attempt auth');
+        
+        // Try authentication WITHOUT status check
+        $token = auth('api')->attempt([
+            'email' => $request->input('mobile_or_email'), 
+            'password' => $request->input('password')
         ]);
+        
+        \Log::info('Step 6: After email attempt', ['token' => $token ? 'success' : 'failed']);
+        
+        if (!$token) {
+            $token = auth('api')->attempt([
+                'mobile' => $request->input('mobile_or_email'), 
+                'password' => $request->input('password')
+            ]);
+            \Log::info('Step 7: After mobile attempt', ['token' => $token ? 'success' : 'failed']);
+        }
 
+        if (!$token) {
+            return $this->outApiJson('user-not-found', trans('main.user_not_found'));
+        }
+
+        \Log::info('Step 8: Login successful');
         return $this->createNewToken($token);
 
     } catch (\Exception $th) {
-        // Log 7: Log exceptions with full details
-        \Log::error('Login exception occurred', [
-            'mobile_or_email' => $request->input('mobile_or_email'),
-            'error_message' => $th->getMessage(),
-            'error_file' => $th->getFile(),
-            'error_line' => $th->getLine(),
-            'stack_trace' => $th->getTraceAsString()
-        ]);
-        
+        \Log::error('Exception', ['message' => $th->getMessage()]);
         return $this->outApiJson('exception', trans('main.exception'));
     }
 }
@@ -176,6 +152,9 @@ class AuthController extends Controller
 
     public function createNewToken($token)
     {
+        \Log::info('createNewToken', [
+            'token' => $token
+        ]);
 
         $user = [
             'access_token' => $token,
