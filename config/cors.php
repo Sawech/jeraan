@@ -19,7 +19,10 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => [
+        'https://jeraan-vue.pages.dev',
+        'http://localhost:8080',
+    ],
 
     'allowed_origins_patterns' => [],
 
