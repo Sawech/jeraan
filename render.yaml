@@ -13,9 +13,11 @@ services:
       - key: APP_URL
         value: https://jeeran-app.onrender.com
       - key: FRONTEND_URL
-        value: https://vue-abx.pages.dev
+        value: https://jeraan-vue.pages.dev
       - key: SANCTUM_STATEFUL_DOMAINS
-        value: vue-abx.pages.dev
+        value: jeraan-vue.pages.dev
+      - key: SESSION_DOMAIN
+        value: .onrender.com
       - key: DB_CONNECTION
         value: mysql
       - key: DB_HOST
@@ -40,6 +42,10 @@ services:
           property: password
       - key: JWT_SECRET
         value: nehMRZNUUCyJHBPHJHUi4liE77NF4KXk6z1jm45nGAt1P1CSROn1SDpLbKQFyVwN
+      - key: SESSION_DRIVER
+        value: cookie
+      - key: CACHE_DRIVER
+        value: file
 
 databases:
   - name: jeeran-db
