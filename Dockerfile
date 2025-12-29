@@ -23,23 +23,32 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy existing application directory
+# Copy existing application directory contents
 COPY . /var/www
 
 # Copy existing application directory permissions
-RUN chown -R www-data:www-data /var/www
+COPY --chown=www-data:www-data . /var/www
 
 # Install dependencies
-RUN composer install --optimize-autoloader --no-dev
+RUN composer install --no-dev --optimize-autoloader
 
 # Copy nginx configuration
-COPY docker/nginx.conf /etc/nginx/nginx.conf
+COPY nginx.conf /etc/nginx/sites-available/default
 
-# Expose port 80
-EXPOSE 80
+# Create storage and cache directories with proper permissions
+RUN mkdir -p /var/www/storage/logs \
+    && mkdir -p /var/www/storage/framework/sessions \
+    && mkdir -p /var/www/storage/framework/views \
+    && mkdir -p /var/www/storage/framework/cache \
+    && chmod -R 775 /var/www/storage \
+    && chmod -R 775 /var/www/bootstrap/cache \
+    && chown -R www-data:www-data /var/www
 
-# Start script
-COPY docker/start.sh /usr/local/bin/start.sh
+# Expose port
+EXPOSE 8080
+
+# Copy startup script
+COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
 CMD ["/usr/local/bin/start.sh"]
