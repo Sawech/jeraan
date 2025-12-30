@@ -20,7 +20,7 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-    'https://your-vue-app.pages.dev',
+    'https://jeeran-app.pages.dev/',
     'https://your-vue-app.netlify.app',
     'http://localhost:8080', // for local dev
     ],

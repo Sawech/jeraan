@@ -10,7 +10,7 @@
     "require": {
         "php": "^8.1",
         "astrotomic/laravel-translatable": "^11.10",
-        "doctrine/dbal": "^3.3",
+        "doctrine/dbal": "^3.10",
         "fruitcake/laravel-cors": "^3.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "intervention/image": "^2.7",
