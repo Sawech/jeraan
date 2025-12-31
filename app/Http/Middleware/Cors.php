@@ -20,7 +20,7 @@ class Cors
         $response = $next($request);
 
         // Set headers
-        $response->headers->set('Access-Control-Allow-Origin', 'https://jeeran-app.pages.dev');  // Specific origin for security (change to '*' temporarily if testing)
+        $response->headers->set('Access-Control-Allow-Origin', '*');  // Specific origin for security (change to '*' temporarily if testing)
         $response->headers->set('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, DELETE');
         $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization, X-Requested-With, Application, lang');
         $response->headers->set('Access-Control-Expose-Headers', 'Authorization');
