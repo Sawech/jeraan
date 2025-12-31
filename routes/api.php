@@ -17,6 +17,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ClientController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +31,8 @@ use Illuminate\Support\Facades\Route;
  */
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    
+    Log::info('API root endpoint hit');
     return response()->json($request->user());
 });
 
@@ -40,6 +43,8 @@ Route::get('/profile',[AuthController::class,'profile']);
 });*/
 
 Route::group(['prefix' => 'auth'], function () {
+    
+    Log::info('API root endpoint hit2');
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/send-verification-code', [AuthController::class, 'sendVerificationCode']);
