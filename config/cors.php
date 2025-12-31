@@ -14,15 +14,14 @@ return [
     | To learn more: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
     |
     */
-
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+'paths' => ['*'],
 
     'allowed_methods' => ['*'],
 
     'allowed_origins' => ['*',
-    'https://jeeran-app.pages.dev',
-    'https://your-vue-app.netlify.app',
-    'http://localhost:8080', // for local dev
+    // 'https://jeeran-app.pages.dev',
+    // 'https://your-vue-app.netlify.app',
+    // 'http://localhost:8080', // for local dev
     ],
 
     'allowed_origins_patterns' => [],
