@@ -15,11 +15,11 @@ return [
     |
     */
 
-    'paths' => ['api/*','api/auth/*', 'sanctum/csrf-cookie'],
+    'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
+    'allowed_origins' => ['*',
     'https://jeeran-app.pages.dev',
     'https://your-vue-app.netlify.app',
     'http://localhost:8080', // for local dev
@@ -30,8 +30,6 @@ return [
     'allowed_headers' => ['*'],
 
     'exposed_headers' => [],
-
-    'exposed_headers' => ['Authorization'],
 
     'max_age' => 0,
 
