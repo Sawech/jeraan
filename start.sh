@@ -51,3 +51,8 @@ echo "Starting Nginx..."
 echo "=========================================="
 # Start Nginx in the foreground
 nginx -g "daemon off;"
+
+echo "=========================================="
+echo "Nginx Access Logs:"
+echo "=========================================="
+tail -f /var/log/nginx/access.log
