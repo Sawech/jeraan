@@ -13,9 +13,9 @@ services:
       - key: APP_URL
         value: https://jeraan.onrender.com
       - key: FRONTEND_URL
-        value: https://candid-faloodeh-66d787.netlify.app/
+        value: https://candid-faloodeh-66d787.netlify.app
       - key: SANCTUM_STATEFUL_DOMAINS
-        value: candid-faloodeh-66d787.netlify.app/
+        value: candid-faloodeh-66d787.netlify.app
       - key: SESSION_DOMAIN
         value: .onrender.com
       - key: DB_CONNECTION

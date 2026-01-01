@@ -18,10 +18,10 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*',
-    // 'https://jeeran-app.pages.dev',
-    // 'https://your-vue-app.netlify.app',
-    // 'http://localhost:8080', // for local dev
+    'allowed_origins' => [
+    'https://jeeran-app.pages.dev',
+    'https://candid-faloodeh-66d787.netlify.app',
+    'http://localhost:8080', // for local dev
     ],
 
     'allowed_origins_patterns' => [],
