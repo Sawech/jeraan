@@ -82,59 +82,22 @@ class AuthController extends Controller
     public function login(Request $request)
 {
     try {
-        \Log::info('Step 1: Login started');
+        error_log('========== LOGIN ATTEMPT ==========');
+        error_log('Mobile/Email: ' . $request->input('mobile_or_email'));
+        error_log('Request Data: ' . json_encode($request->all()));
         
         $validator = $this->validateLogin($request);
         if ($validator->fails()) {
+            error_log('Validation Failed: ' . json_encode($validator->errors()));
             return $this->outApiJson('validation', trans('main.validation_errors'), $validator->errors());
         }
 
-        \Log::info('Step 2: Validation passed');
+        error_log('Validation passed, looking up user...');
         
-        // Check if user exists
-        $user = User::where('email', $request->input('mobile_or_email'))->first();
-        \Log::info('Step 3: User lookup', ['found' => $user ? 'yes' : 'no', 'email' => $request->input('mobile_or_email')]);
-        
-        if (!$user) {
-            $user = User::where('mobile', $request->input('mobile_or_email'))->first();
-            \Log::info('Step 4: Mobile lookup', ['found' => $user ? 'yes' : 'no']);
-        }
-        
-        if (!$user) {
-            return $this->outApiJson('user-not-found', trans('main.user_not_found'));
-        }
-
-//         \Log::info('ROLLEELELE', ['role' => $user->role_id]);
-//         if ($user->role_id == 1) {
-//     return $this->outApiJson('user-not-found', trans('main.user_not_found'));
-// }
-        \Log::info('Step 5: About to attempt auth');
-        
-        // Try authentication WITHOUT status check
-        $token = auth('api')->attempt([
-            'email' => $request->input('mobile_or_email'), 
-            'password' => $request->input('password')
-        ]);
-        
-        \Log::info('Step 6: After email attempt', ['token' => $token ? 'success' : 'failed']);
-        
-        if (!$token) {
-            $token = auth('api')->attempt([
-                'mobile' => $request->input('mobile_or_email'), 
-                'password' => $request->input('password')
-            ]);
-            \Log::info('Step 7: After mobile attempt', ['token' => $token ? 'success' : 'failed']);
-        }
-
-        if (!$token) {
-            return $this->outApiJson('user-not-found', trans('main.user_not_found'));
-        }
-
-        \Log::info('Step 8: Login successful');
-        return $this->createNewToken($token);
-
+        // ... rest of your code
     } catch (\Exception $th) {
-        \Log::error('Exception', ['message' => $th->getMessage()]);
+        error_log('EXCEPTION: ' . $th->getMessage());
+        error_log('Stack trace: ' . $th->getTraceAsString());
         return $this->outApiJson('exception', trans('main.exception'));
     }
 }
