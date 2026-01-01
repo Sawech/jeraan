@@ -48,6 +48,8 @@ class DashboardController extends Controller
             return $this->outApiJson('success', trans('main.success'), $data);
 
         } catch (\Exception$th) {
+        error_log('Exception: ' . $th->getMessage());
+        error_log('Stack trace: ' . $th->getTraceAsString());
             return $this->outApiJson('exception', trans('main.exception'));
         }
     }
