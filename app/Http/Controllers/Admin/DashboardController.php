@@ -33,12 +33,18 @@ class DashboardController extends Controller
     public function dashboardList()
     {
         try {
+        error_log('========== Dashboard Begin ==========');
             $data['allLanguages'] = $this->systemLanguages();
+        error_log('========== allLanguages Done ==========');
             $data['newOrdersCount'] = Order::where('status', 'new')->count();
+        error_log('========== newOrdersCount Done ==========');
             $data['deliveredOrdersCount'] = Order::where('status', 'delivered')->count();
             $data['waitingOrdersCount'] = Order::where('status', 'waiting_payment')->count();
+        error_log('========== waitingOrdersCount Done ==========');
             $data['usersCount'] = User::where('role_id', 1)->count();
+        error_log('========== usersCount Done ==========');
             $data['siteInfo'] = SiteInfo::get();
+        error_log('========== siteInfo Done ==========');
             return $this->outApiJson('success', trans('main.success'), $data);
 
         } catch (\Exception$th) {
