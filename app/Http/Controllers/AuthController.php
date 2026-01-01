@@ -93,11 +93,48 @@ class AuthController extends Controller
         }
 
         error_log('Validation passed, looking up user...');
+
+        error_log('Step 2: Validation passed');
         
-        // ... rest of your code
+        // Check if user exists
+        $user = User::where('email', $request->input('mobile_or_email'))->first();
+        error_log('Step 3: User lookup', ['found' => $user ? 'yes' : 'no', 'email' => $request->input('mobile_or_email')]);
+        
+        if (!$user) {
+            $user = User::where('mobile', $request->input('mobile_or_email'))->first();
+            error_log('Step 4: Mobile lookup', ['found' => $user ? 'yes' : 'no']);
+        }
+        
+        if (!$user) {
+            return $this->outApiJson('user-not-found', trans('main.user_not_found'));
+        }
+        error_log('Step 5: About to attempt auth');
+        
+        // Try authentication WITHOUT status check
+        $token = auth('api')->attempt([
+            'email' => $request->input('mobile_or_email'), 
+            'password' => $request->input('password')
+        ]);
+        
+        error_log('Step 6: After email attempt', ['token' => $token ? 'success' : 'failed']);
+        
+        if (!$token) {
+            $token = auth('api')->attempt([
+                'mobile' => $request->input('mobile_or_email'), 
+                'password' => $request->input('password')
+            ]);
+            error_log('Step 7: After mobile attempt', ['token' => $token ? 'success' : 'failed']);
+        }
+
+        if (!$token) {
+            return $this->outApiJson('user-not-found', trans('main.user_not_found'));
+        }
+
+        error_log('Step 8: Login successful');
+        return $this->createNewToken($token);
+
     } catch (\Exception $th) {
-        error_log('EXCEPTION: ' . $th->getMessage());
-        error_log('Stack trace: ' . $th->getTraceAsString());
+        error_log('Exception', ['message' => $th->getMessage()]);
         return $this->outApiJson('exception', trans('main.exception'));
     }
 }
