@@ -37,10 +37,8 @@ RUN composer install --no-dev --optimize-autoloader
 COPY nginx.conf /etc/nginx/sites-available/default
 
 # Create storage and cache directories with proper permissions
-RUN mkdir -R /var/www/storage \
-    && mkdir -R /var/www/bootstrap/cache \
-    && chmod -R 775 /var/www/storage \
-    && chmod -R 775 /var/www/bootstrap/cache \
+RUN mkdir -p /var/www/storage/logs /var/www/storage/framework/sessions /var/www/storage/framework/views /var/www/storage/framework/cache /var/www/bootstrap/cache \
+    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache \
     && chown -R www-data:www-data /var/www
 
 # Expose port
