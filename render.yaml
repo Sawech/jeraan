@@ -13,32 +13,32 @@ services:
       - key: APP_URL
         value: https://jeraan.onrender.com
       - key: FRONTEND_URL
-        value: https://jeraan-vue.pages.dev
+        value: https://candid-faloodeh-66d787.netlify.app/
       - key: SANCTUM_STATEFUL_DOMAINS
-        value: jeraan-vue.pages.dev
+        value: candid-faloodeh-66d787.netlify.app/
       - key: SESSION_DOMAIN
         value: .onrender.com
       - key: DB_CONNECTION
-        value: mysql
+        value: psql
       - key: DB_HOST
         fromDatabase:
-          name: jeeran-db
+          name: jeraan
           property: host
       - key: DB_PORT
         fromDatabase:
-          name: jeeran-db
+          name: jeraan
           property: port
       - key: DB_DATABASE
         fromDatabase:
-          name: jeeran-db
+          name: jeraan
           property: database
       - key: DB_USERNAME
         fromDatabase:
-          name: jeeran-db
+          name: jeraan
           property: user
       - key: DB_PASSWORD
         fromDatabase:
-          name: jeeran-db
+          name: jeraan
           property: password
       - key: JWT_SECRET
         value: nehMRZNUUCyJHBPHJHUi4liE77NF4KXk6z1jm45nGAt1P1CSROn1SDpLbKQFyVwN
@@ -48,6 +48,6 @@ services:
         value: file
 
 databases:
-  - name: jeeran-db
-    databaseName: jeraan
+  - name: jeraan
+    databaseName: jeraan_ygao
     user: jeeran
