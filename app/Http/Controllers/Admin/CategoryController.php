@@ -52,13 +52,9 @@ class CategoryController extends Controller
 
     public function addCategory(Request $request)
     {
-        try {error_log('CategoryController before validator', [
-                'request_type' => $request->type,
-            ]);
+        try {error_log('CategoryController before validator');
             $validator = $this->validateAddCategory($request);
-            error_log('CategoryController', [
-                'request_type' => $request->type,
-            ]);
+            error_log('CategoryController');
 
             if ($validator->fails()) {
                 return $this->outApiJson('validation', trans('main.validation_errors'), $validator->errors());
@@ -66,13 +62,9 @@ class CategoryController extends Controller
 
             $category = new Category();
             $category->type = $request->type;
-error_log('CategoryController before upload image', [
-                'request_type' => $request->type,
-            ]);
+            error_log('CategoryController before upload image');
             $upload = $this->uploadImage($request->image, 'image', 'category');
-error_log('CategoryController after upload image', [
-                'request_type' => $request->type,
-            ]);
+            error_log('CategoryController after upload image');
             if (!$upload[0]) {
                 return $this->outApiJson('error-upload', trans('main.faild_upload_image'));
             }
@@ -82,7 +74,9 @@ error_log('CategoryController after upload image', [
                 $name = 'name_' . $language->language_universal;
                 $category->translateOrNew($language->language_universal)->name = $request->input($name);
             }
+            error_log('CategoryController before save');
             $category->save();
+            error_log('CategoryController after save');
             if (!$category) {
                 return $this->outApiJson('error-insert', trans('main.error_insert'));
             }
