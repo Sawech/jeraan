@@ -14,7 +14,7 @@ class Cors
         if ($request->getMethod() === 'OPTIONS') {
 
             return response('', 200)                    //http://localhost:8080
-                ->header('Access-Control-Allow-Origin', 'https://candid-faloodeh-66d787.netlify.app') // https://candid-faloodeh-66d787.netlify.app
+                ->header('Access-Control-Allow-Origin', 'https://candid-faloodeh-66d787.netlify.app, http://localhost:8080') // https://candid-faloodeh-66d787.netlify.app
                 ->header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, DELETE')
                 ->header('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization, X-Requested-With, Application, lang')
                 ->header('Access-Control-Allow-Credentials', 'true')
@@ -24,7 +24,7 @@ class Cors
         $response = $next($request);
 
         // Add CORS headers to all responses                           http://localhost:8080
-        $response->headers->set('Access-Control-Allow-Origin', 'https://candid-faloodeh-66d787.netlify.app'); // https://candid-faloodeh-66d787.netlify.app
+        $response->headers->set('Access-Control-Allow-Origin', 'https://candid-faloodeh-66d787.netlify.app, http://localhost:8080'); // https://candid-faloodeh-66d787.netlify.app
         $response->headers->set('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, DELETE');
         $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization, X-Requested-With, Application, lang');
         $response->headers->set('Access-Control-Expose-Headers', 'Authorization');
