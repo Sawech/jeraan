@@ -54,7 +54,6 @@ class SizeTypeCategoryController extends Controller
         // Otherwise use authenticated user's ID (for client viewing their own order)
         $userId = $request->user_id ?? auth()->id();
         
-        \Log::info('Fetching sizes for User ID: ' . $userId . ' (Requested by: ' . auth()->id() . ')');
         
         $category = Category::with(['sizeTypes' => function($query) {
             $query->without('sizeTypeUser');
@@ -87,8 +86,6 @@ class SizeTypeCategoryController extends Controller
 
         return $this->outApiJson('success', trans('main.success'), $category);
     } catch (\Exception $th) {
-        \Log::error('Error in listAllSizeTypeCategory: ' . $th->getMessage());
-        \Log::error($th->getTraceAsString());
         return $this->outApiJson('exception', trans('main.exception'));
     }
 }

@@ -13,6 +13,7 @@ use App\Models\Category;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -33,23 +34,23 @@ class DashboardController extends Controller
     public function dashboardList()
     {
         try {
-        error_log('========== Dashboard Begin ==========');
+        Log::info('========== Dashboard Begin ==========');
             $data['allLanguages'] = $this->systemLanguages();
-        error_log('========== allLanguages Done ==========');
+        Log::info('========== allLanguages Done ==========');
             $data['newOrdersCount'] = Order::where('status', 'new')->count();
-        error_log('========== newOrdersCount Done ==========');
+        Log::info('========== newOrdersCount Done ==========');
             $data['deliveredOrdersCount'] = Order::where('status', 'delivered')->count();
             $data['waitingOrdersCount'] = Order::where('status', 'waiting_payment')->count();
-        error_log('========== waitingOrdersCount Done ==========');
+        Log::info('========== waitingOrdersCount Done ==========');
             $data['usersCount'] = User::where('role_id', 1)->count();
-        error_log('========== usersCount Done ==========');
+        Log::info('========== usersCount Done ==========');
             $data['siteInfo'] = SiteInfo::get();
-        error_log('========== siteInfo Done ==========');
+        Log::info('========== siteInfo Done ==========');
             return $this->outApiJson('success', trans('main.success'), $data);
 
         } catch (\Exception$th) {
-        error_log('Exception: ' . $th->getMessage());
-        error_log('Stack trace: ' . $th->getTraceAsString());
+        Log::info('Exception: ' . $th->getMessage());
+        Log::info('Stack trace: ' . $th->getTraceAsString());
             return $this->outApiJson('exception', trans('main.exception'));
         }
     }

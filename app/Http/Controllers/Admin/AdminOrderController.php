@@ -152,7 +152,6 @@ class AdminOrderController extends Controller
                             'size_gown_option_image' => $option->image,
                             'order_value' => $orderDetail->value,
                         ];
-
                     }
                 }
                 $newDetails[$sizeGown->name] = $newArray;
@@ -220,14 +219,14 @@ class AdminOrderController extends Controller
         $validator = $this->validateDeleteOrder($request);
 
         Log::info('🔘 Deleting order', [
-            'order_id' => $request->order_id
+            'order_id' => $request->id
         ]);
         
         if ($validator->fails()) {
             return $this->outApiJson('validation', trans('main.validation_errors'), $validator->errors());
         }
 
-        $order = Order::where('id', $request->order_id)->first();
+        $order = Order::where('id', $request->id)->first();
         if (!$order) {
             return $this->outApiJson('not-found-data', trans('main.not_found_data'));
         }
@@ -235,18 +234,18 @@ class AdminOrderController extends Controller
         \DB::beginTransaction();
         try {
             // Delete related order details first
-            OrderSizeGoneOption::where('order_id', $request->order_id)->delete();
+            OrderSizeGoneOption::where('order_id', $request->id)->delete();
             
             // Delete related order buttons
-            OrderButton::where('order_id', $request->order_id)->delete();
+            OrderButton::where('order_id', $request->id)->delete();
             
             // Finally delete the order itself
-            Order::where('id', $request->order_id)->delete();
+            Order::where('id', $request->id)->delete();
             
             \DB::commit();
             
             Log::info('✅ Order deleted successfully', [
-                'order_id' => $request->order_id
+                'order_id' => $request->id
             ]);
             
             return $this->outApiJson('success', trans('main.deleted_sucess'));
@@ -266,7 +265,7 @@ class AdminOrderController extends Controller
     public function validateDeleteOrder($request)
     {
         $validator = Validator::make($request->all(), [
-            'order_id' => 'required',
+            'id' => 'required',
         ]);
 
         return $validator;

@@ -9,6 +9,7 @@ use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -82,58 +83,58 @@ class AuthController extends Controller
     public function login(Request $request)
 {
     try {
-        error_log('========== LOGIN ATTEMPT ==========');
-        error_log('Mobile/Email: ' . $request->input('mobile_or_email'));
-        error_log('Request Data: ' . json_encode($request->all()));
+        Log::info('========== LOGIN ATTEMPT ==========');
+        Log::info('Mobile/Email: ' . $request->input('mobile_or_email'));
+        Log::info('Request Data: ' . json_encode($request->all()));
         
         $validator = $this->validateLogin($request);
         if ($validator->fails()) {
-            error_log('Validation Failed: ' . json_encode($validator->errors()));
+            Log::info('Validation Failed: ' . json_encode($validator->errors()));
             return $this->outApiJson('validation', trans('main.validation_errors'), $validator->errors());
         }
 
-        error_log('Validation passed, looking up user...');
-        error_log('Step 2: Validation passed');
+        Log::info('Validation passed, looking up user...');
+        Log::info('Step 2: Validation passed');
         
         $user = User::where('email', $request->input('mobile_or_email'))->first();
-        error_log('Step 3: User lookup - found: ' . ($user ? 'yes' : 'no'));
+        Log::info('Step 3: User lookup - found: ' . ($user ? 'yes' : 'no'));
         
         if (!$user) {
             $user = User::where('mobile', $request->input('mobile_or_email'))->first();
-            error_log('Step 4: Mobile lookup - found: ' . ($user ? 'yes' : 'no'));
+            Log::info('Step 4: Mobile lookup - found: ' . ($user ? 'yes' : 'no'));
         }
         
         if (!$user) {
             return $this->outApiJson('user-not-found', trans('main.user_not_found'));
         }
         
-        error_log('Step 5: About to attempt auth');
+        Log::info('Step 5: About to attempt auth');
         
         $token = auth('api')->attempt([
             'email' => $request->input('mobile_or_email'), 
             'password' => $request->input('password')
         ]);
         
-        error_log('Step 6: After email attempt - token: ' . ($token ? 'success' : 'failed'));
+        Log::info('Step 6: After email attempt - token: ' . ($token ? 'success' : 'failed'));
         
         if (!$token) {
             $token = auth('api')->attempt([
                 'mobile' => $request->input('mobile_or_email'), 
                 'password' => $request->input('password')
             ]);
-            error_log('Step 7: After mobile attempt - token: ' . ($token ? 'success' : 'failed'));
+            Log::info('Step 7: After mobile attempt - token: ' . ($token ? 'success' : 'failed'));
         }
 
         if (!$token) {
             return $this->outApiJson('user-not-found', trans('main.user_not_found'));
         }
 
-        error_log('Step 8: Login successful');
+        Log::info('Step 8: Login successful');
         return $this->createNewToken($token);
 
     } catch (\Exception $th) {
-        error_log('Exception: ' . $th->getMessage());
-        error_log('Stack trace: ' . $th->getTraceAsString());
+        Log::info('Exception: ' . $th->getMessage());
+        Log::info('Stack trace: ' . $th->getTraceAsString());
         return $this->outApiJson('exception', trans('main.exception'));
     }
 }

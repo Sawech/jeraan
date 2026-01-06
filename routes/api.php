@@ -32,7 +32,6 @@ use Illuminate\Support\Facades\Log;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     
-    Log::info('API root endpoint hit');
     return response()->json($request->user());
 });
 
@@ -41,10 +40,15 @@ Route::post('/register',[AuthController::class,'register']);
 Route::post('/login',[AuthController::class,'login']);
 Route::get('/profile',[AuthController::class,'profile']);
 });*/
-
+Route::get('/test-log', function() {
+    \Log::info('🔥 TEST LOG - This should appear in laravel.log');
+    logger()->info('🔥 TEST LOG using logger() helper');
+    \Illuminate\Support\Facades\Log::info('🔥 TEST LOG using full namespace');
+    
+    return 'Check storage/logs/laravel.log now!';
+});
 Route::group(['prefix' => 'auth'], function () {
     
-    Log::info('API root endpoint hit2');
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/send-verification-code', [AuthController::class, 'sendVerificationCode']);

@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\SizeTypeCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class CategoryController extends Controller
 {
@@ -51,8 +52,13 @@ class CategoryController extends Controller
 
     public function addCategory(Request $request)
     {
-        try {
+        try {error_log('CategoryController before validator', [
+                'request_type' => $request->type,
+            ]);
             $validator = $this->validateAddCategory($request);
+            error_log('CategoryController', [
+                'request_type' => $request->type,
+            ]);
 
             if ($validator->fails()) {
                 return $this->outApiJson('validation', trans('main.validation_errors'), $validator->errors());
@@ -60,8 +66,13 @@ class CategoryController extends Controller
 
             $category = new Category();
             $category->type = $request->type;
-
+error_log('CategoryController before upload image', [
+                'request_type' => $request->type,
+            ]);
             $upload = $this->uploadImage($request->image, 'image', 'category');
+error_log('CategoryController after upload image', [
+                'request_type' => $request->type,
+            ]);
             if (!$upload[0]) {
                 return $this->outApiJson('error-upload', trans('main.faild_upload_image'));
             }
@@ -79,7 +90,7 @@ class CategoryController extends Controller
             return $this->outApiJson('success', trans('main.category_created_successfully'), $category);
 
         } catch (\Exception$th) {
-            dd($th->getMessage());
+            error_log($th->getMessage());
             return $this->outApiJson('exception', trans('main.exception'));
         }
     }
