@@ -54,7 +54,9 @@ class SizeTypeController extends Controller
     public function addSizeType(Request $request)
     {
         try {
+            error_log('SizeTypeController after save');
             $validator = $this->validateAddSizeType($request);
+            error_log('SizeTypeController after validator');
 
             if ($validator->fails()) {
                 return $this->outApiJson('validation', trans('main.validation_errors'), $validator->errors());
@@ -65,7 +67,9 @@ class SizeTypeController extends Controller
                 $name = 'name_' . $language->language_universal;
                 $sizeType->translateOrNew($language->language_universal)->name = $request->input($name);
             }
+            error_log('SizeTypeController after foreach');
             $sizeType->save();
+            error_log('SizeTypeController after sizeType->save');
             if (!$sizeType) {
                 return $this->outApiJson('error-insert', trans('main.error_insert'));
             }
@@ -73,6 +77,7 @@ class SizeTypeController extends Controller
             return $this->outApiJson('success', trans('main.size_type_created_successfully'), $sizeType);
 
         } catch (\Exception$th) {
+            error_log($th->getMessage());
             return $this->outApiJson('exception', trans('main.exception'));
         }
     }
