@@ -55,6 +55,7 @@ class CategoryController extends Controller
         try {error_log('CategoryController before validator');
             $validator = $this->validateAddCategory($request);
             error_log('CategoryController');
+            Log::info('CategoryController');
 
             if ($validator->fails()) {
                 return $this->outApiJson('validation', trans('main.validation_errors'), $validator->errors());
@@ -63,8 +64,11 @@ class CategoryController extends Controller
             $category = new Category();
             $category->type = $request->type;
             error_log('CategoryController before upload image');
+            Log::info('CategoryController before upload image');
             $upload = $this->uploadImage($request->image, 'image', 'category');
             error_log('CategoryController after upload image');
+            Log::info('CategoryController after upload image0' . $upload[0]);
+            Log::info('CategoryController after upload image' . $upload[1]);
             if (!$upload[0]) {
                 return $this->outApiJson('error-upload', trans('main.faild_upload_image'));
             }
@@ -75,8 +79,10 @@ class CategoryController extends Controller
                 $category->translateOrNew($language->language_universal)->name = $request->input($name);
             }
             error_log('CategoryController before save');
+            Log::info('CategoryController before save');
             $category->save();
             error_log('CategoryController after save');
+            Log::info('CategoryController after save');
             if (!$category) {
                 return $this->outApiJson('error-insert', trans('main.error_insert'));
             }
@@ -84,6 +90,7 @@ class CategoryController extends Controller
             return $this->outApiJson('success', trans('main.category_created_successfully'), $category);
 
         } catch (\Exception$th) {
+            Log::info('CategoryController err' . $th->getMessage());
             error_log($th->getMessage());
             return $this->outApiJson('exception', trans('main.exception'));
         }

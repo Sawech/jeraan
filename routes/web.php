@@ -17,17 +17,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/test-log', function() {
-    \Log::info(' TESTING LOG - ' . now());
-    \Log::debug('Debug log test');
-    \Log::error('Error log test');
-    
-    // Also try direct file write
-    file_put_contents(
-        storage_path('logs/manual-test.txt'),
-        date('Y-m-d H:i:s') . " - Direct write test\n",
-        FILE_APPEND
-    );
-    
-    return 'Check logs now! Look for: storage/logs/laravel-' . date('Y-m-d') . '.log';
+// In routes/web.php or api.php
+Route::get('/test-cloudinary', function() {
+    try {
+        $result = cloudinary()->admin()->ping();
+        return response()->json(['status' => 'success', 'data' => $result]);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+    }
 });

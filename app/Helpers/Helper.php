@@ -23,6 +23,8 @@ trait Helper
             return [false, 'allow_extention_error'];
         }
 
+        error_log('Starting Cloudinary upload for file: ' . $file->getClientOriginalName());
+        
         // Upload to Cloudinary
         $uploadedFile = cloudinary()->upload($file->getRealPath(), [
             'folder' => 'uploads/' . $folder,
@@ -33,10 +35,14 @@ trait Helper
             ]
         ]);
 
+        error_log('Cloudinary upload successful: ' . $uploadedFile->getSecurePath());
+        
         // Return the secure URL
         return [true, $uploadedFile->getSecurePath()];
 
     } catch (\Exception $exception) {
+        error_log('Cloudinary upload failed: ' . $exception->getMessage());
+        error_log('Stack trace: ' . $exception->getTraceAsString());
         return [false, 'unable_upload_file'];
     }
 }
