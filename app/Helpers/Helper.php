@@ -29,8 +29,8 @@ trait Helper
         $uploadedFile = cloudinary()->upload($file->getRealPath(), [
             'folder' => 'uploads/' . $folder,
             'transformation' => [
-                'width' => 300,
-                'height' => 200,
+                'width' => 65,
+                'height' => 85,
                 'crop' => 'fill'
             ]
         ]);
