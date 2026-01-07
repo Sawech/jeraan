@@ -22,7 +22,7 @@ trait Helper
             if (!in_array($ext, $this->getExt($type))) {
                 return [false, 'allow_extention_error'];
             }
-            $subfolder = date('Y') . '/' . date('m') . '/' . date('d') . '/';
+            $subfolder = date('Y') . '/' . date('m') . '/';
             $destinationPath = storage_path('app/public/uploads/' . $folder . '/' . $subfolder);
             $fileName = md5($file->getClientOriginalName()) . '-' . rand(9999, 9999999) .
             '-' . rand(9999, 9999999) . '.' . $file->getClientOriginalExtension();

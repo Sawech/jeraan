@@ -180,7 +180,7 @@ class SizeTypeCategoryController extends Controller
                 return $this->outApiJson('validation', trans('main.validation_errors'), $validator->errors());
             }
 
-            $deleteSizeTypeCategory = SizeTypeCategory::where('category_id', $request->category_id)->delete();
+            $deleteSizeTypeCategory = SizeTypeCategory::where('category_id', $request->id)->delete();
 
             if ($deleteSizeTypeCategory) {
                 return $this->outApiJson('success', trans('main.size_type_deleted_successfully'));
@@ -193,7 +193,7 @@ class SizeTypeCategoryController extends Controller
     public function validateDeleteSizeTypeCategory($request)
     {
         $validator = Validator::make($request->all(), [
-            'category_id' => 'required',
+            'id' => 'required',
         ]);
         return $validator;
     }

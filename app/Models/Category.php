@@ -23,6 +23,12 @@ class Category extends Model
             'size_type_id'
         )->withPivot('id');
     }
+
+    
+    public function getImageAttribute($value)
+    {
+        return asset('storage/uploads/category/'.$value);
+    }
     
     // Add this to get user-specific size values
     public function sizeTypesWithUserValues($userId)

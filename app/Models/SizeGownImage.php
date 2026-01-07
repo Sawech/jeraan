@@ -15,6 +15,6 @@ class SizeGownImage extends Model
 
     public function getImageAttribute($value)
     {
-        return $value;
+            return asset('storage/uploads/sizeGown/'.$value);
     }
 }
