@@ -16,28 +16,30 @@ trait Helper
 {
 
     public function uploadImage($file, $type, $folder)
-    {
-        try {
-            $ext = strtolower($file->getClientOriginalExtension());
-            if (!in_array($ext, $this->getExt($type))) {
-                return [false, 'allow_extention_error'];
-            }
-            $subfolder = date('Y') . '/' . date('m') . '/';
-            $destinationPath = storage_path('app/public/uploads/' . $folder . '/' . $subfolder);
-            $fileName = md5($file->getClientOriginalName()) . '-' . rand(9999, 9999999) .
-            '-' . rand(9999, 9999999) . '.' . $file->getClientOriginalExtension();
-            $file->move($destinationPath, $fileName);
-
-            $img = Image::make($destinationPath.'/'.$fileName);
-            $img->resize(100, 100, function ($constraint) {
-                $constraint->aspectRatio();
-            })->save($destinationPath.'/'.$fileName);
-            $image = Image::make($destinationPath.'/'.$fileName)->resize(300, 200)->save($destinationPath.'/'.$fileName);
-            return [true, $subfolder . $fileName];
-        } catch (FileException $exception) {
-            return [false, 'unable_upload_file'];
+{
+    try {
+        $ext = strtolower($file->getClientOriginalExtension());
+        if (!in_array($ext, $this->getExt($type))) {
+            return [false, 'allow_extention_error'];
         }
+
+        // Upload to Cloudinary
+        $uploadedFile = cloudinary()->upload($file->getRealPath(), [
+            'folder' => 'uploads/' . $folder,
+            'transformation' => [
+                'width' => 300,
+                'height' => 200,
+                'crop' => 'fill'
+            ]
+        ]);
+
+        // Return the secure URL
+        return [true, $uploadedFile->getSecurePath()];
+
+    } catch (\Exception $exception) {
+        return [false, 'unable_upload_file'];
     }
+}
 
     public function sendEmail($user)
     {

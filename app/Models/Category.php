@@ -26,9 +26,15 @@ class Category extends Model
 
     
     public function getImageAttribute($value)
-    {
-        return asset('storage/uploads/category/'.$value);
+{
+    // If it's already a full URL (from Cloudinary), return as is
+    if (filter_var($value, FILTER_VALIDATE_URL)) {
+        return $value;
     }
+    
+    // Fallback for old local images
+    return $value ? asset('storage/uploads/category/' . $value) : null;
+}
     
     // Add this to get user-specific size values
     public function sizeTypesWithUserValues($userId)
