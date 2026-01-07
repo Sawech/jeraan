@@ -8,6 +8,7 @@ use App\Models\SizeGown;
 use App\Models\SizeGownOption;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class SizeGownController extends Controller
 {
@@ -27,12 +28,16 @@ class SizeGownController extends Controller
     public function listSizeGown()
     {
         try {
+        Log::info('SizeGown');
             $sizeGowns = SizeGown::with(['images', 'sizeGownOptions'])->paginate(10);
+        Log::info('SizeGown after search');
             if ($sizeGowns->isEmpty()) {
                 return $this->outApiJson('not-found-data', trans('main.not_found_data'));
             }
+        Log::info('SizeGown after check'. json_encode($sizeGowns));
             return $this->outApiJson('success', trans('main.success'), $sizeGowns);
         } catch (\Exception$th) {
+        Log::info('SizeGown err',$th->getMessage());
             dd($th->getMessage());
             return $this->outApiJson('exception', trans('main.exception'));
         }
