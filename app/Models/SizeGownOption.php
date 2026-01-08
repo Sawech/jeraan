@@ -17,10 +17,15 @@ class SizeGownOption extends Model
     protected $fillable = ['iamge'];
 
     public function getImageAttribute($value)
-    {
-            return asset('storage/uploads/sizeGown/' . $value);
-
+{
+    // If it's already a full URL (from Cloudinary), return as is
+    if (filter_var($value, FILTER_VALIDATE_URL)) {
+        return $value;
     }
+    
+    // Fallback for old local images
+    return $value ? asset('storage/uploads/sizeGown/' . $value) : null;
+}
 
     public function toArray()
 {
